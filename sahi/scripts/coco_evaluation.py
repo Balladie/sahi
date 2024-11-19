@@ -101,7 +101,7 @@ def evaluate_core(
     """
 
     metrics = metric if isinstance(metric, list) else [metric]
-    allowed_metrics = ["bbox", "segm"]
+    allowed_metrics = ["bbox", "segm", "mask"]
     for metric in metrics:
         if metric not in allowed_metrics:
             raise KeyError(f"metric {metric} is not supported")
@@ -111,12 +111,20 @@ def evaluate_core(
         if not isinstance(metric_items, list):
             metric_items = [metric_items]
     if areas is not None:
+        if isinstance(areas, str):
+            try:
+                areas = json.loads(areas.replace(" ", ", "))
+            except:
+                raise ValueError("3 integers should be specified as areas, representing 3 area regions")
         if len(areas) != 3:
             raise ValueError("3 integers should be specified as areas, representing 3 area regions")
     eval_results = OrderedDict()
     cocoGt = COCO(dataset_path)
     cat_ids = list(cocoGt.cats.keys())
     for metric in metrics:
+        if metric == "mask":
+            metric = "segm"
+
         msg = f"Evaluating {metric}..."
         msg = "\n" + msg
         print(msg)
