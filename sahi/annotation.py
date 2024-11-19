@@ -523,7 +523,8 @@ class ObjectAnnotation:
             if bbox_from_segmentation is not None:
                 bbox = bbox_from_segmentation
             else:
-                raise ValueError("Invalid segmentation mask.")
+                # raise ValueError("Invalid segmentation mask.")
+                self.mask = None
         else:
             self.mask = None
 
