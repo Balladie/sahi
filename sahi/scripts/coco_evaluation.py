@@ -132,6 +132,16 @@ def evaluate_core(
         iou_type = metric
         with open(result_path) as json_file:
             results = json.load(json_file)
+
+        for res in results:
+            rm_idxs = []
+            for i, seg in enumerate(res["segmentation"]):
+                if len(seg) < 6:
+                    rm_idxs.append(i)
+            res["segmentation"] = [seg for i, seg in enumerate(res["segmentation"]) if i not in rm_idxs]
+
+        results = [res for res in results if res["segmentation"]]
+
         try:
             cocoDt = cocoGt.loadRes(results)
         except IndexError:
